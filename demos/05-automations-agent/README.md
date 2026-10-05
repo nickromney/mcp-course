@@ -36,3 +36,15 @@ The **agent** (`link_checker_agent.py`) uses Claude to compose these tools intel
 ```bash
 mcp dev link_checker_mcp_server.py
 ```
+
+## Offline acceptance (no API key)
+
+From the repository root, run `make test-offline`. The fixture executes the
+published bounded calculator and local link extraction/report tools on synthetic
+files. It uses a minimal MCP registration stub, so no SDK install, model call,
+network request or authentication is needed. This is a tool contract fixture,
+not proof of a live MCP transport or Claude response.
+
+The `uv run` agent declares both `claude-agent-sdk` and `mcp[cli]`; its child MCP
+server keeps its own script dependency metadata. Course environment setup uses
+Python 3.12 and preserves the checked-in requirements inputs.

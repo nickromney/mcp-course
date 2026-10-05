@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["claude-agent-sdk>=0.1.21"]
+# dependencies = ["claude-agent-sdk>=0.1.21", "mcp[cli]>=1.0.0"]
 # ///
 
 """
