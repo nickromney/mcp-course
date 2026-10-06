@@ -132,10 +132,48 @@ Client → Server: close notification
 ### 1. Tools (Model-Controlled)
 Functions the AI can execute:
 ```python
+import ast
+import math
+import operator
+
+# Only bounded real arithmetic: no names, calls, attributes, powers or indexing.
+OPERATIONS = {ast.Add: operator.add, ast.Sub: operator.sub,
+              ast.Mult: operator.mul, ast.Div: operator.truediv}
+
 @mcp.tool()
 async def calculate(expression: str) -> str:
-    """Evaluate a mathematical expression"""
-    return str(eval(expression))
+    """Calculate +, -, *, / and parentheses, within bounded input/results."""
+    if not isinstance(expression, str) or len(expression) > 128:
+        raise ValueError("Use an expression of at most 128 characters")
+    try:
+        tree = ast.parse(expression, mode="eval")
+    except (SyntaxError, RecursionError) as exc:
+        raise ValueError("Invalid arithmetic expression") from exc
+    if sum(1 for _ in ast.walk(tree)) > 64:
+        raise ValueError("Expression has too many operations")
+
+    def visit(node, depth=0):
+        if depth > 16:
+            raise ValueError("Expression is nested too deeply")
+        if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+            result = node.value
+        elif isinstance(node, ast.BinOp) and type(node.op) in OPERATIONS:
+            result = OPERATIONS[type(node.op)](visit(node.left, depth + 1),
+                                              visit(node.right, depth + 1))
+        elif isinstance(node, ast.UnaryOp) and isinstance(node.op, (ast.UAdd, ast.USub)):
+            result = visit(node.operand, depth + 1)
+            if isinstance(node.op, ast.USub):
+                result = -result
+        else:
+            raise ValueError("Only real numbers and +, -, *, / are supported")
+        if not math.isfinite(result) or abs(result) > 1e12:
+            raise ValueError("Result must be finite and within +/- 1e12")
+        return result
+
+    try:
+        return str(visit(tree.body))
+    except (ZeroDivisionError, OverflowError) as exc:
+        raise ValueError("Arithmetic result is undefined or too large") from exc
 ```
 
 ### 2. Resources (Application-Controlled)

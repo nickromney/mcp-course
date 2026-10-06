@@ -1,5 +1,5 @@
 ENV_NAME ?= mcp-course
-PYTHON_VERSION ?= 3.11
+PYTHON_VERSION ?= 3.12
 CONDA_ACTIVATE = source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate ; conda activate
 
 .PHONY: all conda-create env-setup pip-tools-setup repo-setup notebook-setup env-update clean
@@ -17,7 +17,7 @@ env-setup: conda-create
 
 repo-setup:
 	mkdir -p requirements
-	echo "ipykernel" > requirements/requirements.in
+	test -f requirements/requirements.in || printf 'ipykernel\n' > requirements/requirements.in
 
 notebook-setup:
 	$(CONDA_ACTIVATE) $(ENV_NAME) && \
@@ -34,3 +34,7 @@ clean:
 freeze:
 	$(CONDA_ACTIVATE) $(ENV_NAME) && \
 	uv pip freeze > requirements/requirements.txt
+
+.PHONY: test-offline
+test-offline:
+	python3 -m unittest discover -s tests -v
