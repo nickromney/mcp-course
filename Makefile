@@ -37,4 +37,9 @@ freeze:
 
 .PHONY: test-offline
 test-offline:
-	python3 -m unittest discover -s tests -v
+	python3 -m unittest discover -s tests -p 'test_offline_demos.py' -v
+
+# Use an environment synced from requirements/requirements.txt; no uv resolution at test time.
+.PHONY: test-sdk-offline
+test-sdk-offline:
+	python -m unittest discover -s tests -p 'test_sdk_stdio.py' -v
