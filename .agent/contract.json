@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "project": "mcp-course",
+  "purpose": "Independent teaching demos of MCP servers, clients and agent applications.",
+  "actions": [
+    {
+      "id": "verify",
+      "intent": "Execute the complete configured local gate before publishing this repository.",
+      "argv": [
+        "lefthook",
+        "run",
+        "pre-push",
+        "--force"
+      ],
+      "effects": [
+        "read",
+        "local_write",
+        "process",
+        "network"
+      ],
+      "acceptance_scope": "fixture",
+      "inputs": [
+        "lefthook.yml",
+        "Makefile",
+        "pyproject.toml",
+        "uv.lock",
+        "tests/test_sdk_stdio.py",
+        "demos/05-automations-agent/link_checker_mcp_server.py",
+        "demos/assets-resources/MCP_TECHNICAL_CHEATSHEET.md",
+        "tests/test_offline_demos.py"
+      ],
+      "requires": [],
+      "recovery": "Read the failed owner job; repair its source or declared prerequisite, then rerun the full local gate. Fixture acceptance does not authorize cloud/device deployment."
+    },
+    {
+      "id": "verify-lesson",
+      "intent": "Re-evaluate the retained domain decision using its owning regression/contract.",
+      "argv": [
+        "uv",
+        "run",
+        "--locked",
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_sdk_stdio.py",
+        "-v"
+      ],
+      "effects": [
+        "read",
+        "local_write",
+        "process",
+        "network"
+      ],
+      "acceptance_scope": "fixture",
+      "inputs": [
+        "tests/test_sdk_stdio.py",
+        "demos/05-automations-agent/link_checker_mcp_server.py",
+        "demos/assets-resources/MCP_TECHNICAL_CHEATSHEET.md",
+        "pyproject.toml",
+        "uv.lock"
+      ],
+      "requires": [],
+      "recovery": "Inspect the named source/test and reproduce the failing synthetic case before reusing this lesson."
+    }
+  ],
+  "learning": [
+    {
+      "id": "owner-invariant",
+      "when": [
+        "mcp",
+        "stdio",
+        "sdk",
+        "tool"
+      ],
+      "summary": "The published MCP demo must register and execute its tool contract with the real pinned SDK over stdio; mocks alone cannot certify SDK compatibility.",
+      "owner": "tests/test_sdk_stdio.py",
+      "basis": [
+        {
+          "path": "tests/test_sdk_stdio.py",
+          "sha256": "8bed414b88bbdf49c81d7e3d103e02b6ae406b5fc924550e4e548bcf755b0ea7"
+        },
+        {
+          "path": "demos/05-automations-agent/link_checker_mcp_server.py",
+          "sha256": "61f61af6d860188e4591898224ca457a7734b125b23381bf623c8f57ac66562c"
+        },
+        {
+          "path": "demos/assets-resources/MCP_TECHNICAL_CHEATSHEET.md",
+          "sha256": "58fca517142e0f76ded8a9730e2c06290dd5d76a13766c55bfd0aa732a4510f4"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "21d2563c011020ead6c97553d0d108288ece9957f135625d3b04d6cbab1c4e7b"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7f27345faf00cef868794c83f0bf4baa6c132dbbc9a179dc09963d4b5ddcc73c"
+        }
+      ],
+      "verify_action": "verify-lesson"
+    }
+  ]
+}
