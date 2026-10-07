@@ -850,3 +850,24 @@ existing lock with `uv pip sync requirements/requirements.txt`, then run
 copy of the shipped server in a temporary directory, initializes a real client,
 checks schemas, calls file/report tools and rejects missing required arguments.
 It forbids the child's HTTP helper and never starts a model or reads API keys.
+
+## Agent operation and plan status
+
+For the current ownership, action-effect and evidence contracts, use [the operating model](docs/agent-system.md). Its implemented plan covers agent navigation and documentation. Feature proposals below remain proposals until their own acceptance evidence is recorded; dated observations retain their original scope.
+
+## Demo dependency and acceptance map
+
+| Selected teaching branch | Dependency/source owner | Local proof | Attended proof |
+| --- | --- | --- | --- |
+| Intro MCP server/client | `demos/01-introduction-to-mcp/` scripts | `make test-offline` | Selected client/Inspector against the selected server |
+| Actual SDK stdio | `requirements/requirements.txt`, `tests/test_sdk_stdio.py` | `make test-sdk-offline` in a previously synced environment | None for fixture handshake/tool calls; keep missing SDK as unavailable |
+| Model-backed chat | `demos/02-study-case-anthropic-tools-resources-prompts-chat-app/` | Relevant import/fixture checks | Model credential, token-spend boundary and scenario result |
+| Claude Agents SDK | `demos/03-claude-agents-sdk-filesystem-agent/` | Selected script's declared dependencies/fixtures | Explicit model/tool permissions and attended application behavior |
+| Deployment examples | Selected demo's own walkthrough | Syntax/fixture checks only | Named hosting target, revision and dated endpoint evidence |
+
+`make test-offline` and `make test-sdk-offline` use unittest and do not resolve
+packages at test time. `uv run` demo commands may resolve inline dependencies;
+setup is separate from protocol acceptance. A module import is not a handshake,
+a handshake is not a model-backed scenario, and none proves hosting acceptance.
+Keep SDK failures as focused protocol regressions rather than requiring paid
+model calls for deterministic example changes.
