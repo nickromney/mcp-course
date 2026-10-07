@@ -1,0 +1,4 @@
+pre-push:
+  commands:
+    offline-sdk:
+      run: uv run --locked python -m unittest discover -s tests -v
