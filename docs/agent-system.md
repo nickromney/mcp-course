@@ -23,8 +23,8 @@ documents retain product detail and historical evidence:
 | [demos/02-study-case-anthropic-tools-resources-prompts-chat-app](../demos/02-study-case-anthropic-tools-resources-prompts-chat-app) | Progressive protocol and model-backed examples. |
 | [requirements](../requirements) | Shared/inline dependency declarations. |
 | [demos](../demos) | Shared/inline dependency declarations. |
-| [tests/test_offline_demos.py](../tests/test_offline_demos.py) | Credential-free behavior and actual SDK stdio protocol proof. |
-| [tests/test_sdk_stdio.py](../tests/test_sdk_stdio.py) | Credential-free behavior and actual SDK stdio protocol proof. |
+| [tests/test_offline_demos.py](../tests/test_offline_demos.py) | Credential-free behavior with stubbed mcp modules; not SDK proof. |
+| [tests/test_sdk_stdio.py](../tests/test_sdk_stdio.py) | Actual SDK stdio protocol proof (`make test-sdk-offline`). |
 
 Intent selects the owning policy; that policy produces decisions or artifacts;
 adapters perform effects; verification establishes the result. Change the
@@ -44,7 +44,7 @@ Examples containing placeholder paths or bracketed options are grammar.
 | Command | Effects and evidence |
 | --- | --- |
 | `make test-offline` | Python unittest offline demos. |
-| `make test-sdk-offline` | SDK stdio unittest in previously synced environment; no resolution at test time. |
+| `make test-sdk-offline` | SDK stdio unittest under `uv run --locked` (pyproject.toml, uv.lock). |
 | `cd demos/01-introduction-to-mcp && uv run mcp_server.py` | Runs selected demo; uv may resolve dependencies. |
 
 ## Observe, verify and retain
@@ -75,4 +75,4 @@ checks retain their own scope and are not certified by this pass.
 
 ## Project decisions
 
-Choose a demo before setting up tooling. make test-offline checks the credential-free examples; make test-sdk-offline checks actual SDK stdio behavior in an environment already synced from requirements/requirements.txt. These are separate from paid model-backed chat, deployment and Inspector acceptance. Trace lesson to demo script to dependency declaration to protocol test. Record demo path, environment/dependency identity and handshake/tool-call outcome with a working-demo claim. Prefer the two offline gates when changing deterministic examples, and run only the relevant model-backed scenario when attended credentials and spend are part of the task. Promote repeated protocol mistakes into a demo fixture rather than adding more setup prose.
+Choose a demo before setting up tooling. make test-offline checks the credential-free examples; make test-sdk-offline checks actual SDK stdio behavior under `uv run --locked` (pyproject.toml, uv.lock). These are separate from paid model-backed chat, deployment and Inspector acceptance. Trace lesson to demo script to dependency declaration to protocol test. Record demo path, environment/dependency identity and handshake/tool-call outcome with a working-demo claim. Prefer the two offline gates when changing deterministic examples, and run only the relevant model-backed scenario when attended credentials and spend are part of the task. Promote repeated protocol mistakes into a demo fixture rather than adding more setup prose.

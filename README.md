@@ -844,9 +844,8 @@ This course material is provided for educational purposes as part of the O'Reill
 ### Offline SDK acceptance
 
 The standard-library gate remains `make test-offline`. For actual MCP registration
-and stdio transport, create an isolated Python 3.12 environment and sync the
-existing lock with `uv pip sync requirements/requirements.txt`, then run
-`make test-sdk-offline` with that environment active. The SDK test executes a
+and stdio transport, run `make test-sdk-offline`, which runs under
+`uv run --locked` (pyproject.toml, uv.lock). The SDK test executes a
 copy of the shipped server in a temporary directory, initializes a real client,
 checks schemas, calls file/report tools and rejects missing required arguments.
 It forbids the child's HTTP helper and never starts a model or reads API keys.
@@ -860,7 +859,7 @@ For the current ownership, action-effect and evidence contracts, use [the operat
 | Selected teaching branch | Dependency/source owner | Local proof | Attended proof |
 | --- | --- | --- | --- |
 | Intro MCP server/client | `demos/01-introduction-to-mcp/` scripts | `make test-offline` | Selected client/Inspector against the selected server |
-| Actual SDK stdio | `requirements/requirements.txt`, `tests/test_sdk_stdio.py` | `make test-sdk-offline` in a previously synced environment | None for fixture handshake/tool calls; keep missing SDK as unavailable |
+| Actual SDK stdio | `pyproject.toml`, `uv.lock`, `tests/test_sdk_stdio.py` | `make test-sdk-offline` (`uv run --locked`) | None for fixture handshake/tool calls; keep missing SDK as unavailable |
 | Model-backed chat | `demos/02-study-case-anthropic-tools-resources-prompts-chat-app/` | Relevant import/fixture checks | Model credential, token-spend boundary and scenario result |
 | Claude Agents SDK | `demos/03-claude-agents-sdk-filesystem-agent/` | Selected script's declared dependencies/fixtures | Explicit model/tool permissions and attended application behavior |
 | Deployment examples | Selected demo's own walkthrough | Syntax/fixture checks only | Named hosting target, revision and dated endpoint evidence |

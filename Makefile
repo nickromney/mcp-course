@@ -39,7 +39,7 @@ freeze:
 test-offline:
 	uv run --locked python -m unittest discover -s tests -p 'test_offline_demos.py' -v
 
-# Use an environment synced from requirements/requirements.txt; no uv resolution at test time.
+# Runs under uv run --locked (pyproject.toml, uv.lock).
 .PHONY: test-sdk-offline
 test-sdk-offline:
 	uv run --locked python -m unittest discover -s tests -p 'test_sdk_stdio.py' -v
