@@ -844,9 +844,8 @@ This course material is provided for educational purposes as part of the O'Reill
 ### Offline SDK acceptance
 
 The standard-library gate remains `make test-offline`. For actual MCP registration
-and stdio transport, create an isolated Python 3.12 environment and sync the
-existing lock with `uv pip sync requirements/requirements.txt`, then run
-`make test-sdk-offline` with that environment active. The SDK test executes a
+and stdio transport, run `make test-sdk-offline`, which runs under
+`uv run --locked` (pyproject.toml, uv.lock). The SDK test executes a
 copy of the shipped server in a temporary directory, initializes a real client,
 checks schemas, calls file/report tools and rejects missing required arguments.
 It forbids the child's HTTP helper and never starts a model or reads API keys.
