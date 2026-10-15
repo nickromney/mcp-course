@@ -43,3 +43,6 @@ test-offline:
 .PHONY: test-sdk-offline
 test-sdk-offline:
 	uv run --locked python -m unittest discover -s tests -p 'test_sdk_stdio.py' -v
+
+VERIFY_SKILL := skills/verify-mcp-course
+include $(VERIFY_SKILL)/verify.mk
