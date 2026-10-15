@@ -46,20 +46,33 @@ cmd_doctor() {
     return 1
   fi
   if [ ! -x "$VK_ROOT/.venv/bin/python" ] || [ ! -f "$VK_ROOT/uv.lock" ] || [ ! -f "$VK_ROOT/tests/test_sdk_stdio.py" ]; then
-    vk_fail "locked SDK test prerequisites are missing (run the documented dependency setup first)"
+    vk_fail "locked SDK test prerequisites are missing (run 'uv sync --locked' from the repository root)"
     return 1
   fi
   vk_say "OK locked SDK test prerequisites exist"
 }
 cmd_sdk_offline() {
   local log="$EVIDENCE/sdk-offline.log"
+  local uv_path
+  if command -v mise >/dev/null 2>&1; then
+    uv_path="$(mise which uv 2>/dev/null || true)"
+  else
+    uv_path="$(command -v uv 2>/dev/null || true)"
+  fi
+  if [ -z "$uv_path" ] || [ ! -x "$uv_path" ]; then
+    vk_fail "could not resolve an executable uv (install uv or make it available through mise)"
+    return 1
+  fi
   (
     cd "$VK_ROOT"
     unset ANTHROPIC_API_KEY OPENAI_API_KEY
-    HOME="$STATE/home" UV_CACHE_DIR="$STATE/uv-cache" \
+    PATH="$(dirname "$uv_path"):$PATH" HOME="$STATE/home" UV_CACHE_DIR="$STATE/uv-cache" \
       UV_PROJECT_ENVIRONMENT="$VK_ROOT/.venv" UV_NO_SYNC=1 \
       PYTHONDONTWRITEBYTECODE=1 make test-sdk-offline
-  ) > "$log" 2>&1
+  ) > "$log" 2>&1 || {
+    tail -n 20 "$log"
+    return 1
+  }
   cat "$log"
 }
 cmd_cleanup() {

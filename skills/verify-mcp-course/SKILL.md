@@ -5,7 +5,8 @@ description: Verify the course's pinned MCP SDK through local stdio handshakes a
 
 # Verify the MCP course SDK path
 
-Run `make verify` from this repository. It invokes the documented `make test-sdk-offline`
+From the repository root, first run `uv sync --locked` to create the `.venv` from the
+repository's `uv.lock`. Then run `make verify`. It invokes the documented `make test-sdk-offline`
 acceptance target, which runs `tests/test_sdk_stdio.py` under `uv run --locked`. The suite
 starts copied course servers as local stdio child processes, initializes the actual pinned MCP
 SDK client, checks registered tool schemas, calls tools, and checks their results and file
