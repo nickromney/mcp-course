@@ -1,6 +1,7 @@
 """Execute the published calculator and stdio tools without models, keys or network."""
 import asyncio
 import importlib.util
+import json
 import re
 import sys
 import tempfile
@@ -42,3 +43,68 @@ class OfflineDemos(unittest.TestCase):
             self.assertIn('Wrote:', module.write_report('fixture.md', 'Synthetic report'))
             self.assertEqual(fixture.read_text(), 'Synthetic report')
             self.assertIn('Error:', module.write_report('../escape.md', 'blocked'))
+
+    def test_vercel_demo_frontend_dependency_security_baseline(self):
+        demo = ROOT / 'demos/06-deploy-simple-agent-mcp-vercel'
+        manifest = json.loads((demo / 'package.json').read_text())
+        lock = json.loads((demo / 'package-lock.json').read_text())
+        self.assert_frontend_baseline(manifest, lock)
+
+    def test_vercel_demo_frontend_baseline_rejects_original_affected_versions(self):
+        demo = ROOT / 'demos/06-deploy-simple-agent-mcp-vercel'
+        manifest = json.loads((demo / 'package.json').read_text())
+        lock = json.loads((demo / 'package-lock.json').read_text())
+        old_manifest = json.loads(json.dumps(manifest))
+        old_lock = json.loads(json.dumps(lock))
+        old_manifest['dependencies'].update({
+            'next': '14.2.18', 'react': '18.3.1', 'react-dom': '18.3.1',
+        })
+        old_lock['packages']['']['dependencies'].update(old_manifest['dependencies'])
+        old_lock['packages']['node_modules/next']['version'] = '14.2.18'
+        old_lock['packages']['node_modules/react']['version'] = '18.3.1'
+        old_lock['packages']['node_modules/react-dom']['version'] = '18.3.1'
+        with self.assertRaisesRegex(AssertionError, 'Next.js'):
+            self.assert_frontend_baseline(old_manifest, old_lock)
+
+    def test_vercel_demo_frontend_baseline_rejects_unreviewed_next_major(self):
+        demo = ROOT / 'demos/06-deploy-simple-agent-mcp-vercel'
+        manifest = json.loads((demo / 'package.json').read_text())
+        lock = json.loads((demo / 'package-lock.json').read_text())
+        manifest['dependencies']['next'] = '16.0.0'
+        lock['packages']['']['dependencies']['next'] = '16.0.0'
+        lock['packages']['node_modules/next']['version'] = '16.0.0'
+        with self.assertRaisesRegex(AssertionError, 'reviewed Next.js 15.5 branch'):
+            self.assert_frontend_baseline(manifest, lock)
+
+    def assert_frontend_baseline(self, manifest, lock):
+        root_package = lock['packages']['']
+        locked = lock['packages']
+        dependencies = manifest['dependencies']
+        for package in ('next', 'react', 'react-dom'):
+            self.assertEqual(root_package['dependencies'][package], dependencies[package])
+            self.assertEqual(locked[f'node_modules/{package}']['version'], dependencies[package])
+
+        next_version = tuple(int(part) for part in dependencies['next'].split('.'))
+        self.assertEqual(next_version[:2], (15, 5), 'Next.js must remain on the reviewed Next.js 15.5 branch')
+        self.assertGreaterEqual(next_version, (15, 5, 28), 'Next.js is below the patched 15.5 baseline')
+        react_version = tuple(int(part) for part in dependencies['react'].split('.'))
+        react_dom_version = tuple(int(part) for part in dependencies['react-dom'].split('.'))
+        self.assertGreaterEqual(react_version[0], 19, 'Next.js App Router requires React 19')
+        self.assertEqual(react_version, react_dom_version, 'React and ReactDOM versions must match exactly')
+        for package in ('@types/react', '@types/react-dom'):
+            type_range = manifest['devDependencies'][package]
+            self.assertRegex(type_range, r'^\^19\.\d+\.\d+$')
+            type_entry = locked[f'node_modules/{package}']
+            type_version = tuple(int(part) for part in type_entry['version'].split('.'))
+            type_floor = tuple(int(part) for part in type_range[1:].split('.'))
+            self.assertEqual(type_version[0], 19, f'{package} must use React 19 types')
+            self.assertGreaterEqual(type_version, type_floor, f'{package} is below its declared range')
+        for package, entry in locked.items():
+            if package == 'node_modules/@next/env' or package.startswith('node_modules/@next/swc-'):
+                self.assertEqual(entry['version'], dependencies['next'], f'{package} must match Next.js')
+        sharp = locked.get('node_modules/sharp')
+        self.assertIsNotNone(sharp, 'Next.js must resolve sharp for its patched image optimizer')
+        self.assertGreaterEqual(tuple(int(part) for part in sharp['version'].split('.')), (0, 35, 5))
+        for package, entry in locked.items():
+            if package.startswith('node_modules/@img/sharp-'):
+                self.assertGreaterEqual(tuple(int(part) for part in entry['version'].split('.')), (0, 35, 5))
