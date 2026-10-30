@@ -4,8 +4,9 @@ annotated-types==0.7.0
     # via pydantic
 anthropic==0.76.0
     # via -r ./requirements/requirements.in
-anyio==4.10.0
+anyio==4.14.2
     # via
+    #   -r ./requirements/requirements.in
     #   anthropic
     #   claude-agent-sdk
     #   httpx
@@ -15,7 +16,7 @@ anyio==4.10.0
     #   starlette
 appnope==0.1.4
     # via ipykernel
-arxiv==2.4.0
+arxiv==3.0.0
     # via -r ./requirements/requirements.in
 asttokens==3.0.0
     # via stack-data
@@ -23,14 +24,17 @@ attrs==25.3.0
     # via
     #   jsonschema
     #   referencing
-certifi==2025.8.3
+certifi==2026.10.19
     # via
+    #   -r ./requirements/requirements.in
     #   httpcore
     #   httpx
     #   requests
+cffi==2.1.1
+    # via cryptography
 charset-normalizer==3.4.3
     # via requests
-claude-agent-sdk==0.1.20
+claude-agent-sdk==0.2.121
     # via -r ./requirements/requirements.in
 click==8.2.1
     # via
@@ -40,6 +44,8 @@ colorama==0.4.6
     # via griffe
 comm==0.2.3
     # via ipykernel
+cryptography==50.0.2
+    # via pyjwt
 debugpy==1.8.16
     # via ipykernel
 decorator==5.2.1
@@ -70,8 +76,9 @@ httpx==0.28.1
     #   openai
 httpx-sse==0.4.1
     # via mcp
-idna==3.10
+idna==3.15
     # via
+    #   -r ./requirements/requirements.in
     #   anyio
     #   httpx
     #   requests
@@ -103,7 +110,7 @@ matplotlib-inline==0.1.7
     # via
     #   ipykernel
     #   ipython
-mcp==1.12.4
+mcp==1.30.0
     # via
     #   -r ./requirements/requirements.in
     #   claude-agent-sdk
@@ -136,33 +143,43 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pydantic==2.11.7
+pycparser==3.12
+    # via cffi
+pydantic==2.12.5
     # via
+    #   -r ./requirements/requirements.in
     #   anthropic
     #   mcp
     #   openai
     #   openai-agents
     #   pydantic-settings
-pydantic-core==2.33.2
-    # via pydantic
+pydantic-core==2.41.5
+    # via
+    #   -r ./requirements/requirements.in
+    #   pydantic
 pydantic-settings==2.10.1
     # via mcp
-pygments==2.19.2
+pygments==2.20.0
     # via
+    #   -r ./requirements/requirements.in
     #   ipython
     #   ipython-pygments-lexers
     #   rich
+pyjwt==2.15.1
+    # via mcp
 python-dateutil==2.9.0.post0
     # via
     #   jupyter-client
     #   pandas
-python-dotenv==1.1.1
+python-dotenv==1.2.2
     # via
     #   -r ./requirements/requirements.in
     #   mcp
     #   pydantic-settings
-python-multipart==0.0.20
-    # via mcp
+python-multipart==0.0.32
+    # via
+    #   -r ./requirements/requirements.in
+    #   mcp
 pytz==2025.2
     # via pandas
 pyzmq==27.0.1
@@ -173,8 +190,9 @@ referencing==0.36.2
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.5
+requests==2.33.0
     # via
+    #   -r ./requirements/requirements.in
     #   arxiv
     #   openai-agents
 rich==14.1.0
@@ -192,16 +210,19 @@ six==1.17.0
 sniffio==1.3.1
     # via
     #   anthropic
-    #   anyio
+    #   claude-agent-sdk
     #   openai
 sse-starlette==3.0.2
     # via mcp
 stack-data==0.6.3
     # via ipython
-starlette==0.47.2
-    # via mcp
-tornado==6.5.2
+starlette==1.3.1
     # via
+    #   -r ./requirements/requirements.in
+    #   mcp
+tornado==6.6
+    # via
+    #   -r ./requirements/requirements.in
     #   ipykernel
     #   jupyter-client
 tqdm==4.67.1
@@ -221,7 +242,7 @@ typing-extensions==4.14.1
     # via
     #   anthropic
     #   anyio
-    #   ipython
+    #   mcp
     #   openai
     #   openai-agents
     #   pydantic
@@ -230,14 +251,17 @@ typing-extensions==4.14.1
     #   starlette
     #   typer
     #   typing-inspection
-typing-inspection==0.4.1
+typing-inspection==0.4.2
     # via
+    #   -r ./requirements/requirements.in
+    #   mcp
     #   pydantic
     #   pydantic-settings
 tzdata==2025.2
     # via pandas
-urllib3==2.5.0
+urllib3==2.8.0
     # via
+    #   -r ./requirements/requirements.in
     #   requests
     #   types-requests
 uvicorn==0.35.0
