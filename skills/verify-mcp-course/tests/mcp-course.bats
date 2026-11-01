@@ -1,6 +1,9 @@
 #!/usr/bin/env bats
 
 setup() {
+  # Git hooks export GIT_DIR and friends; clear them so git acts on this checkout and the fixtures, not the pushed repo.
+  # shellcheck disable=SC2046
+  unset $(git rev-parse --local-env-vars)
   SKILL_DIR="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
   SCRIPT="$SKILL_DIR/scripts/control.sh"
   export VERIFY_BASE_DIR="$BATS_TEST_TMPDIR/base"
